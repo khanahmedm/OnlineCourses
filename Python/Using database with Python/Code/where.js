@@ -1,0 +1,22 @@
+myData = [
+[50.06688579999999,19.9136192, 'aleja Adama Mickiewicza 30, 30-059 Kraków, Poland'],
+[38.6487895,-90.31079620000001, '1 Brookings Dr, St. Louis, MO 63130, USA'],
+[52.2394019,21.0150792, 'Krakowskie Przedmieście 5, 00-068 Warszawa, Poland'],
+[30.018923,31.499674, 'Cairo Governorate 11835, Egypt'],
+[33.4242399,-111.9280527, 'Tempe, AZ 85281, USA'],
+[38.0399391,23.8030901, 'Monumental Plaza, Building C, 1st Floor, Leof. Kifisias 44, Marousi 151 25, Greece'],
+[28.3639976,75.58696809999999, 'VidyaVihar Campus, Pilani, Rajasthan 333031, India'],
+[6.8919631,3.7186605, 'Ilishan Remo Ogun State Nigeria, ILISHAN REMO, Nigeria'],
+[25.2677203,82.99125819999999, 'Ajagara, Banaras Hindu University Campus, Varanasi, Uttar Pradesh 221005, India'],
+[12.9527314,77.5157387, 'Gnana Bharathi Main Road, Nagarbhavi, Bengaluru, Karnataka 560056, India'],
+[31.5497007,-97.1143046, '1301 S University Parks Dr, Waco, TX 76706, USA'],
+[39.9619537,116.3662615, '19 Xinjiekou Outer St, BeiTaiPingZhuang, Haidian Qu, Beijing Shi, China, 100875'],
+[53.8938988,27.5460609, 'Praspyekt Nyezalyezhnastsi 4, Minsk, Belarus'],
+[44.8184339,20.4575676, 'Studentski trg 1, Beograd, Serbia'],
+[42.5030333,-89.0309048, '700 College St, Beloit, WI 53511, USA'],
+[53.8938988,27.5460609, 'Praspyekt Nyezalyezhnastsi 4, Minsk, Belarus'],
+[31.262218,34.801461, 'שד בן-גוריון 1, Beersheba, Israel'],
+[10.6779085,78.74454879999999, 'Palkalaiperur, Tiruchirappalli, Tamil Nadu 620024, India'],
+[42.3504997,-71.1053991, 'Boston, MA 02215, USA'],
+[35.3050053,-120.6624942, 'San Luis Obispo, CA 93407, USA']
+];
