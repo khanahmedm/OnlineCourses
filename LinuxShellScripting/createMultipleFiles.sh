@@ -17,6 +17,9 @@ do
         touch ~/scripts/test/$fname.$i
 done
 
+total=`ls -l ~/scripts/test/$fname* | wc -l`
+echo $total' files have been created'
+
 for i in ~/scripts/test/$fname*
 do
         chmod a+x $i
