@@ -21,3 +21,7 @@ then
 else
         echo 'Backup failed'
 fi
+
+# uncompress the file in the backup directory
+
+tar -xvf /tmp/backup/backup.tar.gz -C /tmp/backup/backup
