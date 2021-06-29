@@ -1,7 +1,7 @@
 # Title: Back up all files in the folder
 # Author: Ahmed M Khan
 # Date Created: 6/27/21
-# Date Modified: 6/27/21
+# Date Modified: 6/28/21
 # Description : This program backs up all the files in a directory specified
 
 #!/bin/bash
