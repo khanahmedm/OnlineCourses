@@ -11,3 +11,8 @@ echo 'Copying files' && cp /usr/bin/lesspipe* ~/backup || echo 'Something went w
 
 echo 'Printing exit status'
 echo $?
+
+# Changing exit status to 127
+exit 127
+
+# type echo $? at command prompt to see the exit status
