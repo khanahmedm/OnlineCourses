@@ -15,9 +15,14 @@ BACKUP_TARGET="/home/$USER/backup"
 # && only runs if the previous command has exit status of zero; || runs if exit status has non-zero value
 # Redirecting error output (stderr) of mkdir command to /dev/null goes to null device
 
-# Function for creating a backup directory
+# Function for creating a backup directory and setting local variable
 function createBackupDir {
 echo 'Creating a backup directory' && mkdir $BACKUP_TARGET 2> /dev/null || echo 'Directory already exists'
+TESTVAR1='Test variable 1'
+local TESTVAR2='Test variable 2'
+echo $TESTVAR1
+echo $TESTVAR2
+
 }
 
 # Function for tail command
@@ -37,4 +42,9 @@ grep -i denied $LOGFILE | tail 2
 echo 'Printing exit status'
 echo $?
 
+echo $TESTVAR1
+# local variable will print blank
+echo $TESTVAR2
+
+# Setting exit code
 exit 127
