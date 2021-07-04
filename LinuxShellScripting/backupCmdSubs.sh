@@ -38,7 +38,7 @@ createBackupDir
 
 # Copying files
 # Redirecting both stdout and stderr of cp command to log file
-echo 'Copying files' && cp $BACKUP_LOC $BACKUP_TARGET >> $LOGFILE 2>&1
+echo 'Copying files' && cp -v $BACKUP_LOC $BACKUP_TARGET >> $LOGFILE 2>&1
 
 # Finding case-insesitive pattern in the log file and showing the last two lines
 grep -i denied $LOGFILE | tail 2
