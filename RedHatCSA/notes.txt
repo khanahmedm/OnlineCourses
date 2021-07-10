@@ -1,0 +1,1678 @@
+URL for the exam:
+https://www.redhat.com/en/services/training/ex200-red-hat-certified-system-administrator-rhcsa-exam
+
+About Red Hat:
+One of the few commercially supported distro
+Largest most established vendor
+Publicly listed
+PaaS provider (OpenShift)
+Cloud (based on OpenStack)
+JBoss, Ansible, KVM
+
+
+2.1 Loggin in:
+virtual console -- /dev/tty1 through /dev/tty6
+use ctl+alt+F2 to switch to tty2 
+type chvt followed by the terminal number
+on modern sytem, terminal 1 is usually your GUI
+who -- shows users with different tty
+tty -- shows current user's tty
+
+When HatGuru boots up; it shows a terminal login screen
+sudo systemctl set-default graphical.target
+systemctl isolate graphical.target -- start the GUI interface
+
+sudo systemctl set-default multi-user.target
+systemctl isolate multi-user.target -- goes back to command prompt
+
+ssh allows you to connect to secure shell deamon /sbin/sshd
+ssh-keygen -t rsa
+ssh-copy-id guru@192.168.58.1 -- copies the key
+ssh guru@192.168.58.1 hostname -- run command remotely
+ssh guru@192.168.58.1 reboot
+scp afile.txt guru@192.168.58.1:/tmp -- copies to /tmp directory
+sftp guru@192.168.58.1
+/etc/ssh/ssh_config -- global config file
+~/.ssh/config -- user specific config
+
+2.2 Getting help
+http://www.rexegg.com/
+https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/
+https://wiki.centos.org/Documentation
+http://tldp.org/
+
+build manual page database
+su -
+Password:
+mandb
+man man
+/<search word>
+man uses less -- all the keys you can use with less; you can use the same while viewing the man pages
+whatis whatis -- shows what whatis does
+whatis <command> -- shows what the command does from man page description
+whatis ls -- show two lines; one for each section
+man 1 ls -- same as man ls
+man 1p ls -- shows the other section of ls
+man crontab -- shows 3 results for each section
+man man -- shows more details about the sections
+man -f whatis
+apropos whatis
+apropos crontab -- shows 5 results; because apropos looks for crontab in all the man pages and just not the title as in whatis
+man -K perl -- gives you multiple pages one by one; search all the man pages for the word perl
+whatis squirrel -- nothing
+apropos squirrel -- nothing
+man -K squirrel -- one page shows up with the word squirrel
+nmcli connection help -- shows all the option available for connection
+info -- gives info index
+pinfo crontab -- shows the man page
+pinfo grub -- shows grub developer manual
+cd /usr/share/doc -- shows everything installed on the system
+grep -ir redirect * | less -- search for word redirect (case insensitive search) under each directory recursively
+vim /etc/crontab -- shows crontab job definition and what each field means
+whatis is same as man -f
+apropos same as man -k
+
+2.3 Making the most of the TUI
+http://tldp.org/LDP/Bash-Beginners-Guide/html/index.html
+history -- shows command history
+!<command number> -- executes that command again
+!e -- rerun the most recent command that starts with an e
+!e:p -- shows the command but does not run it
+!! -- reruns the last command
+!?tc -- reruns any command that has characters tc in it
+ctrl+r -- does reverse-i-search same as the previous command
+ctrl+p -- shows previous command
+ctrl+n -- shows the next command
+Esc + . -- shows the last word from the previous commands
+ls !$ -- !$ does the same as Esc + .
+echo MY name is Ahmed
+MY name is Ahmed
+^MY^My -- reruns the last command with the substitution
+echo My name is Ahmed
+My name is Ahmed
+grep -ir guru /etc -- searches word guru
+yum search locate -- finds the locate package
+yum install mlocate -- installs mlocate
+updatedb -- updates locate database
+locate passwd -- searches the database and shows results of files that has word passwd
+locate passwd | grep /etc -- only shows results from /etc directory
+find /etc -iname "*wd" -type f -mtime +1 -- find files that end with letters wd in the /etc directory and were modified 1 day ago
+yum install vim -y
+vimtutor -- shows tutorial for vim
+ssh-keygen -p -- changes passphrase
+ctrl+alt+F1 -- takes you to GUI
+
+yum list installed vim* -- to check is vim is already installed
+ 
+3.3 Hierarchy and Navigation
+https://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard
+
+single rooted /
+inverted tree architecture
+/bin -- binaries
+/boot -- bootloader kernel & config
+/dev -- devices, nodes
+/etc -- system level configs
+/home -- users home directories
+/root -- root's home directory
+/run -- dynamic runtime data
+/sbin -- system/superuser binaries
+/tmp -- world writable scratch
+/usr -- programs, libraries, docs
+/var -- persistent variable data
+man hier -- shows all these details
+
+paths -- absolute paths, relative paths; single dot . is the current directory; double dot .. is the parent directory
+cd -- change directory
+ls -- list
+pwd -- present working directory
+~ -- current user's home directory
+~user -- if you're an administrator, you can go into other user's directory
+cd - -- takes you back to the previous directory you were in
+cd -- takes you to user's home directory
+
+3.2 Manipulating filesystems objects
+alias cp='cp -v' -- run cp in verbose mode
+alias mv='mv -v'
+alias mkdir='mkdir -v'
+mkdir fs_lab
+cd fs_lab
+touch fileA fileB fileC fileD
+cp fileA copyA
+mv fileB moveB
+mkdir dirA
+cp fileA fileC dirA/
+cp fileC dirA/copyC -- copies and renames
+mv moveB fileD dirA/
+mv fileC dirA/moveC
+cp -R dirA dirB
+cp -R dirA dirB -- this time copies the whole dirA inside dirB
+mv dirA dirC
+cd dirB
+mv dirA ..
+cd ..
+ls -- shows dirA retrieved from dirB
+mkdir dirD
+mv dirA dirB dirC dirD -- moves dirA, dirB, dirC into dirD
+ls -- only shows dirD
+ls dirD/
+alias rm='rm -v'
+rm fileA copyA
+rmdir dirD/ -- does not work with multiple directories inside a directory
+rm dirD/ -- does not work
+rm -rf dirD/ -- recursive and forced delete
+
+File globbing
+* -- zero or more of any characters; *guru*
+? -- one of any character; guru?.txt
+[..] -- character range; guru.mp[34]
+[^..] -- one of any character not specified; guru[^A-D]
+cd ~/fs_lab
+mkdir bynumber
+touch file-{a,b,c}-{1..30}
+echo file-{a,b,c}-{1..30} 
+ls *2
+ls *2*
+ls file-?-??
+ls file-?-?
+ls *[13579]
+ls *[^13579]
+mkdir 0-9 10-19 20-29 30+
+mv file-?-? 0-9/
+mv file-?-1? 10-19/
+mv file-?-2? 20-29/
+mv file-?-3? 30+/
+
+3.3 Working with links
+symbolic/soft links
+mkdir byparity/{odds,evens} byletter/{a..c}-files -p
+ln -s -v ~/fs_lab/bynumber/*/*[13579] byparity/odds/
+ls byparity/odds/
+ln -s -v ~/fs_lab/bynumber/*/*[^13579] byparity/evens/
+cd ~/fs_lab/byletter/a-files/
+ln -s -v ../../bynumber/*/*a* .
+cd ..
+mkdir subfolder
+mv a-files/ subfolder/
+cd subfolder/a-files/
+ls -- shows broken links
+cd ../../..
+rm -rf * -- remove everything under fs_labs directory
+hard links
+echo HELLO > file
+ln -s file soft
+ln file hard
+ls -li
+cat file
+cat soft
+cat hard
+rm file
+ls -li
+cat soft -- shows no such file or directory
+cat hard -- works
+In RHEL 7, it uses soft links for /usr/bin and /usr/sbin
+lrwxrwxrwx. 1 root root     7 Apr  6  2017 /bin -> usr/bin
+lrwxrwxrwx. 1 root root 8 Apr  6  2017 /sbin -> usr/sbin
+Hard links can only link to files on the same filesystem
+operate at much lower level than soft links
+offer limited protection from deletion, but not modification
+every file on the system has at least one hard link to it's data; you can know by looking at the link count
+
+4.1 Users explained
+every process runs as a user
+every filesystem object belong to a user
+every regular user has a home directory which their data and preferences (. files)
+3 account types
+root - UID 0
+System - UID 1-200 & 201-999
+Regular - UID 1000+
+id - gives information about the account you're utilizing; whenever you create a user, by default a group is also created with the same name
+id root
+whoami
+id -u
+id -un
+users
+who
+w -- shows more details
+getent passwd guru
+useradd nuguru
+id nuguru
+passwd nuguru
+tail /etc/passwd
+getent passwd nuguru
+getent shadow nuguru
+getent group nuguru
+getent gshadow nuguru
+ls -lh /home/nuguru
+ls -lh /home/nuguru/ -a
+ls -la /etc/skel
+usermod -G users nuguru
+usermod -G wheel nuguru
+id nuguru -- only shows wheel
+usermod -aG users,wheel nuguru
+id nuguru -- shows bith users and wheel
+usermod -L nuguru -- locks the account
+usermod -U nuguru -- unlocks the account
+userdel -- removes a user
+userdel -r -- removes the home directory as well
+user database files:
+/etc/passwd -- contains account name, user id, primary group id, comment, home directory, login shell
+/etc/shadow -- contains account, password information (algorithm, random salt, hash value of password), password aging
+
+4.2 Groups explained
+- every process runs as a member of a group
+- every filesystem object belongs to a group
+- every group name maps to a unique GID
+- used to manage shared access to files
+- users get their own private groups by default
+- users may belong to multiple groups
+su - root
+id guru
+groups
+groups guru
+groupadd hatgurus
+usermod -aG hatgurus guru
+id guru
+getent group hatgurus
+usermod -aG wheel guru
+groupdel hatgurus
+groupmod --help
+gpasswd -- deprecated
+group database files: /etc/group; /etc/gshadow
+/etc/group - contains group name, password (stored in /etc/gshadow), group id, group members
+/etc/gshadow - contains group name, password hash, group admins, group members
+
+4.3 Privilege escalation
+root - local admin; never log in as root; use regular accounts and escalate as needed
+su - -- means to switch user to root
+su
+whoami -- shows root
+pwd -- shows guru's home directory
+echo $PATH -- shows guru's path
+su -
+whoami -- shows root
+pwd -- shows root's directory
+echo $PATH -- shows root's environment variables value
+--su is great for running commands as another user
+su guru -c whoami -- shows guru
+exit or ctrl+D
+su - root
+tail -f /var/log/secure &
+-- now log on as guru and then logout; shows the log entries on the screen
+jobs
+kill %1
+journalctl -t su -f -- similar to tail -f command used above
+exit
+ctrl+l -- clears the screen
+id
+sudo useradd nuguru -- asks guru's password
+sudo passwd nuguru
+su -
+journalctl -t sudo
+journalctl -t sudo -o cat -- shows more details on who ran the commands
+su - nuguru
+sudo whoami -- gets warnings; nuguru is not in soduers file
+su -
+journalctl -t sudo -n 1 -- shows the last line
+journalctl -t sudo -n 1 --no-pager -- fits on the screen
+mail -- shows nuguru's activity
+& 1
+& d -- deletes message
+& q -- quits mail
+visudo -- opens /etc/sudoers
+/wheel -- search for wheel; anyone in wheel group can run sudo
+-- requires invokinng user's password
+-- provides more granular control
+-- each instance is logged
+
+4.4 Controlling user access
+chage -l guru
+su -
+chage nuguru -- enter values
+chage -l nuguru
+chage -d 2017-05-14 nuguru
+exit
+su - nuguru -- asks to change the password
+chage -l nuguru
+/etc/shadow contains password aging information
+guru:$6$Jpg8Fguf$465.J0A.ShrhLtxvoCXk9hx1Z6hwW06KJm/2YmjVjicQPeDRmW47GbLbjW70/cfHfDFitTqyydbHIXqQ3R99U1:17368:0:99999:7:::
+:0:99999:7::: -- contains min days between changes, max days between changes, warning before change, missed change grace, account expiry
+usermod -L <username> -- locks user
+usermod -U <username> -- unlocks user
+sudo getent shadow nuguru
+sudo usermod -L nuguru
+sudo getent shadow nuguru -- shows !
+you can edit the shadow file as root to lock the account as well; could use vipw or vigr (vi has extra versions for synta checking)
+sudo usermod -U nuguru
+sudo getent shadow nuguru -- does not have !
+you will need user accounts for mailbox or for running ftp on your system; you want these accounts to user services but does not want to give these accounts any interactive shell access
+sudo usermod -s /sbin/nologin nuguru -- nuguru won't be able to get shell
+sudo getent passwd nuguru
+
+4.5 Network authentication
+difficult to setup; easy to break
+authconfig
+authconfig-tui
+authconfig-gtk
+sudo systemctl isolate graphical.target -- if need to start GUI
+sudo authconfig-gtk -- shows authentication configuration window
+select LDAP for user account database
+select kerberos password as authentication method
+put dc=acloud,dc=guru in LDAP search base DN
+put ldap://serv.acloud.guru as LDAP server
+check TLS
+click download certificates; enter http://serv.acloud.guru/cert.pem
+REALM will be ACLOUD.GURU
+KDCs will be serv.acloud.guru
+admin server will be serv.acloud.guru
+id authguru (this user was already created in the lecture -- did not show)
+getent passwd -- no authguru in the list
+sudo authconfig-gtk
+set to local accounts only and click ok
+
+
+5.1 Managing file access
+every file belongs to one user and one group
+ls -l
+- regular file
+d directory
+l link
+p named pipe
+s socket
+c character device
+b block device
+. extra attributes
+1 link count
+owning user
+owning group
+file size
+last modified
+file name
+chgrp group file
+chown user file
+chmod mode file
+chmod a-x afile
+chmod go-w afile
+chmod u+x afile
+chmod u=rwx,go-wx afile
+chmod -R a+X adirectory (X is for setting execute bits on directories)
+mkdir adirectory
+touch adirectory/file-{a..c}
+chmod u-x adirectory/
+ls -l adirectory -- permission denied
+chmod u+x,u-r adirectory/
+ls -l adirectory -- still permission denied
+chmod u=rwx adirectory/
+mkdir adirectory/another
+touch adirectory/another/file-{a..c}
+sudo chmod -R -v a-x adirectory/ -- removes execute bit from all the folders and files
+chmod -R -v a+x adirectory/ -- now all the files are executables; potential security problem
+sudo chmod -R -v a-x adirectory/ -- remove execute bits
+chmod -R -v a+X adirectory/ -- add execute bits on folders only
+-- you need read and execute privileges to get into a directory
+
+5.2 Numerical permissions:
+rwxr-xr-x --> 111101101 --> 755
+touch rwxrw-r-- rw-rw---- r-xr-xr-x
+ls -l
+chmod 660 rw-rw----
+chmod 764 rwxrw-r--
+chmod 555 r-xr-xr-x
+touch ./{r,-}{w,-}{x,-}{r,-}{w,-}{x,-}{r,-}{w,-}{x,-} -- play with chmod
+
+5.3 Special permissions
+-rwxrwxrwt - where t is a sticky bit and it is set on a directory; items in that directory may only be deleted by their owner
+-- you need write permissions to delete items from a directory
+ls -ld /tmp
+drwxrwxrwt. 12 root root 4096 Mar  7 19:13 /tmp
+
+rwxrwsrwt -- where s is SGID set group identity; new objects in this directory inherits its group owenership; runs as owning group rather than invoker's group
+sudo find / -type d -perm /2000 
+sudo find / -type f -perm /2000 
+sudo strings /usr/bin/locate | grep gid
+
+rwsrwsrwt -- s in user's permission is SUID set user id; program runs as owner rather than caller
+sudo find / -type f -perm /4000
+ls -l /usr/bin/sudo
+---s--x--x. 1 root root 130760 May 30  2017 /usr/bin/sudo
+chmod u+s,g+s,o+t adir
+chmod 3755 adir
+-rwsr-Sr--
+chmod u=rwsx,go=r afile
+chmod 6744 afile
+
+groupadd gurus
+mkdir /home/shared
+ls -ld /home/shared
+chgrp -R gurus shared
+chmod -v g+w,o= /home/shared
+chmod 2770 /home/shared
+ls -ld /home/shared
+su - nuguru
+cd /home/shared -- permission denied
+usermod -aG gurus nuguru
+touch nuguru-file
+ls -l
+id
+
+5.4 Default permissions and user masking
+default 0666 for files
+default 0777 for directories
+touch afile
+mkdir afolder
+ls -l
+but we see 664 for file and 775 for folder
+su -
+touch afile
+mkdir afolder
+ls -l
+still not the same; 544 for file and 755 for folder
+umask -- shows umask for root
+exit
+umask -- shows umask for user
+-- effective user defaults determined by subtracting umask from defaults
+-- umask to view or set user mask
+0666 - 0022 = 0644 for root file
+0777 - 0022 = 0755 for root directory
+0666 - 0002 = 0664 for user file
+0777 - 0002 = 0775 for user directory
+umask 0077
+touch anotherfile -- shows no group or others permission
+vim .bashrc
+vim .bash_profile -- set umask when starting the shell
+
+5.5 POSIX ACLs
+standard permissions too basic
+getfacl filename
+chgrp gurus afile.txt
+chgrp: changing group of ‘afile.txt’: Operation not permitted -- only root can change group ownership on files
+sudo chgrp gurus afile.txt
+ls -l
+getfacl afile.txt
+setfacl -m u:nuguru:rx afile.txt
+setfacl -m g:wheel:rx afile.txt
+getfacl afile.txt
+ls -l afile.txt
+-rw-rwxr--+ 1 guru gurus 15 Mar  1 04:47 afile.txt -- notice the + sign and it means there are extra attributes to file;rwx for group permissions is actually the mask value 
+setfacl -x u:nuguru afile.txt -- removes the user nuguru access
+setfacl -x g:wheel afile.txt -- removes the group access
+getfacl afile.txt
+setfacl -b afile.txt -- removes everything
+
+5.6 ACL masks
+masks limit maximum privileges for group owner, named users, named groups
+unless explicitly set, masks calculated as union of above privileges
+setfacl -m u:nuguru:rx afile.txt
+setfacl -m g:wheel:rx afile.txt
+getfacl afile.txt -- notice the mask value is the union of 
+user:nuguru:r-x
+group::rw-
+group:wheel:r-x
+mask::rwx
+
+setfacl -m m::rx afile.txt -- modifies the mask
+getfacl afile.txt
+group::rw-                      #effective:r--
+group:wheel:r-x
+mask::r-x
+
+5.7 Default ACLs
+new objects created in a directory inherit default ACLs
+mkdir adir
+getfacl adir
+setfacl -Rm d:u:nuguru:rx adir
+setfacl -R -m d:g:wheel:rx adir
+touch adir/afile
+getfacl adir/afile
+# file: adir/afile
+# owner: guru
+# group: guru
+user::rw-
+user:nuguru:r-x                 #effective:r--
+group::rwx                      #effective:rw-
+group:wheel:r-x                 #effective:r--
+mask::rw-
+other::r--
+
+6.1 SELinux fundamentals
+security enhanced linux
+created by NSA to enhance linux security
+MAC - mandatory access control
+more granular, context/role based control
+RBAC - role based access control
+MLS - multi level security
+TE - type enforcemant
+SELinux states: Disabled, Permissive (logs violations, allow access), Enforcing (log violations, deny access)
+Policy: Minimal, Targeted, MLS 
+
+getenforce -- shows Enforcing
+setenforce 0
+geenforce -- shows permissive
+sestatus
+cat /etc/selinux/config
+yum search selinux-pol
+setenforce 1
+getenforce -- shows enforcing
+
+selinux works in the kernel; subjects are users/process/device and objects are files/ports
+when a user makes a request to read a file; kernel checks the discretionary access control (DAC) if the user has permissions; if not then access is denied; if a user has access to read a file, then selinux gets involved; then the request is evaluated using access vector cache (AVC); AVC contains information from policy matrix; policy matrix is determined by the policy you're running and by default it is targeted. If AVC is ok with the request, the users may get access to the file depending on whether selinux is running in permissive or enforcing mode.
+
+6.2 Understanding contexts
+all subjects and objects have contexts
+these contexts are comprised of few components
+user : selinux user
+role :
+type :
+range:
+user:role:type:range
+which users can assume what roles
+what user:role combination is valid with which type
+how subjects and objects may interact based on contexts
+targeted policy focus is on type enforcement
+ls -Z /etc/shadow
+----------. root root system_u:object_r:shadow_t:s0    /etc/shadow
+which passwd -- shows /bin/passwd
+ls -Z $( which passwd )
+-rwsr-xr-x. root root system_u:object_r:passwd_exec_t:s0 /bin/passwd
+passwd nuguru
+ps -def | grep passwd
+kill -STOP <PID>
+ps Z | grep passwd
+chcon -t user_home_dir_t /etc/shadow
+passwd nuguru -- shows passwd: Authentication token manipulation error
+tail -n 30 /var/log/audit/audit.log
+setenforce 0
+passwd nuguru -- lets you change the password
+restorecon -v /etc/shadow
+restorecon reset /etc/shadow context system_u:object_r:user_home_dir_t:s0->system_u:object_r:shadow_t:s0
+
+6.3 Switching booleans
+some aspects of the policy can be controlled via booleans
+defined within policy
+allow fine-tuning
+
+yum install httpd elinks
+vim /etc/httpd/conf.d/userdir.conf
+comment out a line
+#UserDir disabled
+and remove # from UserDir public_html
+systemctl start httpd
+systemctl status httpd
+elinks http://localhost
+su - nuguru
+mkdir public_html
+cd public_html
+echo hellooooo > index.html
+elinks http://localhost/~nuguru -- cannot view the page
+ls -ld /home/nuguru/
+drwx------. 7 nuguru nuguru 196 Mar  9 02:19 /home/nuguru/
+chmod o+x /home/nuguru/
+grep http /var/log/audit/audit.log
+getsebool -a
+semanage boolean -l | sort | less
+setsebool httpd_enable_homedirs=1
+semanage boolen -m -1 httpd_enable_homedirs (same as the last command)
+semanage boolean -l | grep httpd_enable_homedirs
+setsebool -P httpd_enable_homedirs=1 (to change the policy)
+elinks http://localhost/~nuguru
+
+6.4 Amending the policy
+sometimes default selinux policy requires tweaking
+policy updates and config changes can trigger FS relabel
+changes to FS objects not in policy will be lost
+su -
+echo test1 > test1.html
+mv test1.html /var/www/html -v
+cd /var/www/html
+echo test2 > test2.html
+elinks http://localhost/test1.html -- does not work
+elinks http://localhost/test2.html -- works
+ls -Z
+-rw-r--r--. root root unconfined_u:object_r:admin_home_t:s0 test1.html
+-rw-r--r--. root root unconfined_u:object_r:httpd_sys_content_t:s0 test2.html
+-- admin_home_t, httpd_sys_content_t are set at the time of file creation
+semanage fcontext -l -- shows a lot of lines
+semanage fcontext -l | grep httpd_sys_content_t
+--interested in the following line
+/var/www(/.*)?                                     all files          system_u:object_r:httpd_sys_content_t:s0
+Regex refresh:
+/var/www(/.*)? -- / just a slash, . means any character, * means 0 or more preceding characters, ? means 0 or 1 of preceding characters
+vim /etc/httpd/conf.d/userdir.conf 
+:%s/public_html/My_Site
+shift + zz
+systemctl restart httpd
+su - nuguru
+mkdir My_Site
+echo HELLO FROM NUGURU > My_Site/index.html
+elinks http://localhost/~nuguru -- does not work
+ls -Zd My_Site/ public_html/
+drwxrwxr-x. nuguru nuguru unconfined_u:object_r:user_home_t:s0 My_Site/
+drwxrwxr-x. nuguru nuguru unconfined_u:object_r:httpd_user_content_t:s0 public_html/
+^d -- run it without d
+ls -Z My_Site/ public_html/
+My_Site/:
+-rw-rw-r--. nuguru nuguru unconfined_u:object_r:user_home_t:s0 index.html
+
+public_html/:
+-rw-rw-r--. nuguru nuguru unconfined_u:object_r:httpd_user_content_t:s0 index.html
+exit -- go back to root
+semanage fcontext -a -t httpd_user_content_t '/home/.*/My_Site(/.*)?'
+semanage fcontext -l -C
+restorecon -Rv /home/nuguru/My_Site
+elinks http://localhost/~nuguru -- works now
+
+6.5 Troubleshooting
+sudo yum install setroubleshoot-server policycoreutils-gui
+su -
+cd ~nuguru/My_Site/
+ls -Z
+chcon -t user_home_dir_t index.html
+elinks http://localhost/~nuguru -- does not work
+less /var/log/messages
+shift + gg -- takes to end of the file
+notice the below 2 lines
+Mar 15 03:05:38 hatguru setroubleshoot: SELinux is preventing httpd from getattr access on the file /home/nuguru/My_Site/index.html. For complete SELinux messages run: sealert -l e90f479a-b8ef-4642-91e7-e4fd766a44d7
+
+Mar 15 03:05:38 hatguru python: SELinux is preventing httpd from getattr access on the file /home/nuguru/My_Site/index.html.#012#012*****  Plugin restorecon (99.5 confidence) suggests   ************************#012#012If you want to fix the label. #012/home/nuguru/My_Site/index.html default label should be httpd_user_content_t.#012Then you can run restorecon. The access attempt may have been stopped due to insufficient permissions to access a parent directory in which case try to change the following command accordingly.#012Do#012# /sbin/restorecon -v /home/nuguru/My_Site/index.html#012#012*****  Plugin catchall (1.49 confidence) suggests   **************************#012#012If you believe that httpd should be allowed getattr access on the index.html file by default.#012Then you should report this as a bug.#012You can generate a local policy module to allow this access.#012Do#012allow this access for now by executing:#012# ausearch -c 'httpd' --raw | audit2allow -M my-httpd#012# semodule -i my-httpd.pp#012
+
+sealert -l e90f479a-b8ef-4642-91e7-e4fd766a44d7 | less
+systemctl isolate graphical
+system-config-selinux -- shows SELinux Administration window
+
+7.1 Process fundamentals
+processes can be started by other process eg. systemd, linux kernels, user commands
+all processes have a parent
+some processes spawn child processes -- if parent exits, so do the children
+processes are assigned a unique incremental PID
+processes started on CLI run on the foreground
+can be started in the background by appending &
+vim myproc.sh
+#!/bin/bash
+for ITER in $( seq $1 )
+	do
+		echo -n "Hello $ITER. "
+		sleep 1
+	done
+chmod ug+x myproc.sh
+./myproc.sh 20
+./myproc.sh 20 &
+./myproc.sh 20 -- then ctrl+z; stops a process
+bg -- 
+fg -- then ctrl_z
+bg %1 -- where 1 is the job number
+fg %1
+jobs
+
+7.2 Process monitoring
+pstree | less
+pstree -p | less -- shows process ids
+pstree -p --security-context | less
+ps -- shows processes in your terminal
+ps aux -- shows all the processes in your system
+ps faux -- shows family tree as well
+top -- then press z and press x; use < or > to shift the sort column; shift + R reverses the sort order
+uptime
+sar -- shows system activity report
+sar 1 10 -- shows every second for 10 seconds
+sar -d -- shows report on storage devices
+sar -n ALL -- report about your network
+sar -A | less -- shows everything in the system
+sar -3 -- shows the information from 3 days ago
+load average:
+uptime
+ 15:22:52 up  8:44,  3 users,  load average: 0.04, 0.03, 0.05 -- 0.04 in the last 1 min, 0.03 in last 5 min, 0.05 in last 15 min
+
+less /proc/cpuinfo
+grep -c '^processor' /proc/cpuinfo -- shows 2
+load average = sum of run queue per 5 seconds / number of 5 seconds
+
+process states:
+R - running/runnable
+S - sleep (interruptable)
+D - sleep (uniterruptable) waiting for HW
+T - suspended 
+Z - zombie (defunct)
+
+7.3 Controlling processes
+kill -l
+ctrl+c --> SIGINT
+ctrl+z --> SIGSTOP
+fg --> SIGCONT
+./myproc.sh 1000 > 1.out &
+[1] 14504
+tail -f 1.out
+./myproc.sh 1000 > 2.out &
+[2] 14601
+./myproc.sh 1000 > 3.out &
+[3] 14611
+./myproc.sh 1000 > 4.out &
+[4] 14648
+./myproc.sh 1000 > 5.out &
+[5] 14663
+jobs
+[1]   Running                 ./myproc.sh 1000 > 1.out &
+[2]   Running                 ./myproc.sh 1000 > 2.out &
+[3]   Running                 ./myproc.sh 1000 > 3.out &
+[4]-  Running                 ./myproc.sh 1000 > 4.out &
+[5]+  Running                 ./myproc.sh 1000 > 5.out &
+
+ kill 14504
+[guru@HatGuru ~]$
+[1]   Terminated              ./myproc.sh 1000 > 1.out
+
+kill %2
+[guru@HatGuru ~]$
+[2]   Terminated              ./myproc.sh 1000 > 2.out
+
+[guru@HatGuru ~]$ kill -SIGKILL %3
+[guru@HatGuru ~]$
+[3]   Killed                  ./myproc.sh 1000 > 3.out
+[guru@HatGuru ~]$ kill -KILL %4
+[guru@HatGuru ~]$
+[4]-  Killed                  ./myproc.sh 1000 > 4.out
+[guru@HatGuru ~]$ kill -9 %5
+[guru@HatGuru ~]$
+[5]+  Killed                  ./myproc.sh 1000 > 5.out
+
+[guru@HatGuru ~]$ ./myproc.sh 1000 > 1.out &
+[1] 15403
+[guru@HatGuru ~]$ ./myproc.sh 1000 > 2.out &
+[2] 15409
+[guru@HatGuru ~]$ jobs
+[1]-  Running                 ./myproc.sh 1000 > 1.out &
+[2]+  Running                 ./myproc.sh 1000 > 2.out &
+
+killall -19 myproc.sh
+
+[1]+  Stopped                 ./myproc.sh 1000 > 1.out
+
+[2]-  Stopped                 ./myproc.sh 1000 > 2.out
+[guru@HatGuru ~]$ jobs
+[1]+  Stopped                 ./myproc.sh 1000 > 1.out
+[2]-  Stopped                 ./myproc.sh 1000 > 2.out
+
+tail -f 1.out -- frozen
+killall -18 myproc.sh
+[guru@HatGuru ~]$ jobs
+[1]-  Running                 ./myproc.sh 1000 > 1.out &
+[2]+  Running                 ./myproc.sh 1000 > 2.out &
+tail -f 1.out -- continues
+
+killall myproc.sh
+[2]+  Terminated              ./myproc.sh 1000 > 2.out
+[1]+  Terminated              ./myproc.sh 1000 > 1.out
+
+./myproc.sh 1000 > 1.out &
+[1] 15723
+[guru@HatGuru ~]$ pgrep myp
+15723
+
+pkill myp
+[1]+  Terminated              ./myproc.sh 1000 > 1.out
+
+su - nuguru
+then one another terminal
+[guru@HatGuru ~]$ pkill -9 -u nuguru
+pkill: killing pid 15807 failed: Operation not permitted
+
+sudo pkill -9 -u nuguru -- goes back to guru prompt
+type reset and then press enter -- resets the terminal for guru
+
+xev -- on virtualbox terminal
+-- now close the terminal windows and mouse window goes away
+nohup xev
+-- now close the terminal windows and mouse window doesn't go away
+nohup protects child process from parent's exit
+
+7.4 Process priorities
+task scheduler -- 0 means high priority, 139 means low priority
+SCHED_OTHER -- ranges from 100 - 139
+SCHED_BATCH -- ranges from 100 -139
+SCHED_FIFIO, SCHD_RR -- Realtime priorities -- ranges from 0 - 99
+the middle of 100 and 139 is 120; that is equivalent to nice 0
+priority = 120 + niceness -- lower the nice value, higher the priority
+nice values between -20 and -1 has high priority
+nice values between 1 - 19 has lower priority; they are nice enough to share the resources when needed
+
+grep -c '^processor' /proc/cpuinfo
+su -
+for i in 1 2 3 4
+> do
+> sha1sum /dev/zero & done
+[1] 16618
+[2] 16619
+[3] 16620
+[4] 16621
+jobs
+top
+press R, specify the PID and nice value of -10; see the changes in top CPU usage
+press R, specify another PID and nice value of 10; see the changes in top CPU usage
+killall sha1sum
+
+nice sha1sum /dev/zero &
+[2] 16688
+[root@HatGuru ~]# nice -n -5 sha1sum /dev/zero &
+[3] 16689
+
+renice -n -3 -p 16689
+16689 (process ID) old priority -5, new priority -3
+
+renice -n -5 -p 16688
+16688 (process ID) old priority 10, new priority -5
+
+renice -n -10 -u guru -- changes nice value to -10 for guru's user processes
+renice -n -10 -g gurus -- changes nice value to -10 for gurus' group processes
+
+7.5 I/O redirection and piping
+Name	Channel		Default		Redirect
+STDOUT	1		Terminal	> or 1>		>>
+STDERR	2		Terminal	2>		2>>
+STDIN	0		Keyboard	<		<<EOF
+
+find /etc/ -name 'cups' -- shows matches and errors
+find /etc/ -name 'cups' > results.out -- shows errors on the terminal; matches in the file
+find /etc/ -name 'cups' 1> results.out 2> errors.out -- shows nothing on the terminal
+find /etc/ -name 'cups' 2> /dev/null -- only shows the results; errors go to /dev/null
+find /etc/ -name 'cups' >> results.out -- appends the file
+find /etc/ -name 'cups' >> results.out 2>> errors.out
+find /etc/ -name 'cups' > results.out 2>&1 -- send both results and errors to the same file
+find /etc/ -name 'cups' &> results.out -- same as the previous command
+
+cat < /etc/passwd
+cat /etc/passwd -- same as above
+tr : , /etc/passwd -- does not work
+tr : , < /etc/passwd -- works
+cat | tr 'a-z' 'A-Z'
+cat <<THEEND| tr 'a-z' 'A-Z'
+cat <<EXIT| tr 'a-z' 'A-Z' -- same as above
+cat /etc/passwd | cut -d  : -f 7
+cat /etc/passwd | cut -d  : -f 7 | sort | uniq -c
+cat /etc/passwd | cut -d  : -f 7 | sort | uniq -c | mail -s 'Shells' guru@localhost
+cat /etc/passwd | cut -d  : -f 7 | sort | uniq -c | wc -l
+
+8.1 Package Managers
+software installation puts files all over the place
+config files evolve over time & must be handled properly
+package information should be searchable
+package contents/creators must be verified
+some package installation require additional actions
+dependencies should be checked
+rpm - RPM package manager
+
+package file name has different components; package name, version, release, target architecture, file extension
+rpm file contains: files, location, metadata (permissions, timestamp, size, checksum), scripts (pre-install script and post-install script as well as pre-remove and post-remove scripts), signed checksum for package as a whole
+rpm does not have the ability to find dependencies for you and that's why we have yum
+
+YUM - yellowdog Updater, Modified
+wrapper for rpm
+- automatic dependency resolution
+- automatic package retrieval
+- subscription/ repositories
+- automatic updates
+- package groups
+
+when you try to install some package, it checks the following location in local storage
+/etc/yum.conf
+/etc/yum/*
+/etc/yum.repos.d/*.repo
+/var/cache/yum
+then it will search the repositories on the internet; gets the package lists, dependency maps, rpm files, public keys, package groups
+then it consults with rpm, rpm checks the RPMDB 
+
+8.2 Working with YUM
+su -
+yum search scan
+- lets say we are looking for xsane.x86_64 : X Window System front-end for the SANE scanner interface
+yum info xsane
+yum list '*sane*'
+yum install xsane
+yum install xsane -y
+yum remove xsane-common.x86_64
+yum update kernel -- select no
+yum update -- select no
+yum groups list
+yum groups list -- tab twice
+yum groups info Virtualization/ Host
+yum groups install Virtualization/ Host -- select no
+yum history
+yum history list 26
+yum history undo 26 -- select no
+tail -f /var/log/yum.log
+
+8.3 YUM repositories
+default repos contain base packages and updates
+- limited variety
+- legal licensing reasons
+- supportability
+additional repos host vast array of extras
+- fedora EPEL (extra packages for enteprise linux)
+- rpm fusion (lots of additional goodies)
+uname -a
+su -
+elinks dl.fedoraproject.org
+yum-config-manager --add-repo="http://dl.fedoraproject.org/pub/epel/7/x86_64"
+cd /etc/yum.repos.d/
+ls -l -- shows below file as well
+-rw-r--r--. 1 root root  170 Mar 21 19:33 dl.fedoraproject.org_pub_epel_7_x86_64.repo
+cat dl.fedoraproject.org_pub_epel_7_x86_64.repo
+[dl.fedoraproject.org_pub_epel_7_x86_64]
+name=added from: http://dl.fedoraproject.org/pub/epel/7/x86_64
+baseurl=http://dl.fedoraproject.org/pub/epel/7/x86_64
+enabled=1
+
+mv dl.fedoraproject.org_pub_epel_7_x86_64.repo epel.repo
+nano epel.repo -- change the first line to [epel]
+yum repolist -- shows 13000+ packages available through epel
+rpm --import http://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7 -- imports keys
+add below line in epel.repo file if you don't have the keys to be validated
+gpgcheck=0 
+rm epel.repo
+yum install http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+ls -- shows epel.repo
+yum install repoconfig.rpm -- need to check this
+
+9.1 Adding extra storage and swap
+storage devices appear as files in /dev
+for example:
+brw-rw----. 1 root    disk      8,   0 Mar 20 02:30 sda
+brw-rw----. 1 root    disk      8,   1 Mar 20 02:30 sda1
+brw-rw----. 1 root    disk      8,   2 Mar 20 02:30 sda2
+brw-rw----. 1 root    disk      8,  16 Mar 20 02:30 sdb
+
+sda1 -- sd is for SCSI/SATA disk, a is for disk a, and 1 means partition 1
+sdb -- the enitre disk b
+xvda/vda -- are virtual disks
+/dev/vda3 -- virtual disk a partition 3
+- members of group disk has read/write access to devices
+- b at the beginning means it is a block device
+- 8,1 is the major,minor (which driver is handling the device, how is handling the device)
+partitioning startegies
+MBR -- old BIOS; partition table in master boot record; then primary partitions; then extended in which you can create logical partitions upto max of 15 partitions; most systems do not use MBR because of limitations like maximum size of partition device of 2TiB; single point of failure because of partition table
+GPT - UEFI; creates a primary partition table as well as back table beginning and end of the disk; you can create partitions from 1 to 128; maximum of 8ZiB device /partiton size; moving toward 64 ZiB; fault tolerant
+-- first identify the device we want to operate on and then add 2 partitions to it; once partitions are ready, we will format them; then we will mount or activate them; then we will make storage as well as swap persistent
+
+lsblk
+NAME        MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda           8:0    0    8G  0 disk
+├─sda1        8:1    0  512M  0 part /boot
+└─sda2        8:2    0  7.5G  0 part
+  ├─cl-root 253:0    0  6.7G  0 lvm  /
+  └─cl-swap 253:1    0  820M  0 lvm  [SWAP]
+sdb           8:16   0  512M  0 disk
+sr0          11:0    1 1024M  0 rom
+
+- sda has partitions on it and sdb does not have any paritions; sdb is not the boot device
+gdisk /dev/sdb
+then select n; below is how it is going to look like;
+Command (? for help): n
+Partition number (1-128, default 1):
+First sector (34-1048542, default = 2048) or {+-}size{KMGTP}:
+Last sector (2048-1048542, default = 1048542) or {+-}size{KMGTP}: +64M
+Current type is 'Linux filesystem'
+Hex code or GUID (L to show codes, Enter = 8300):
+Changed type of partition to 'Linux filesystem'
+
+Command (? for help): p
+Disk /dev/sdb: 1048576 sectors, 512.0 MiB
+Logical sector size: 512 bytes
+Disk identifier (GUID): 16824CB3-4E75-4D7F-9ADA-5DD988088655
+Partition table holds up to 128 entries
+First usable sector is 34, last usable sector is 1048542
+Partitions will be aligned on 2048-sector boundaries
+Total free space is 917437 sectors (448.0 MiB)
+
+Number  Start (sector)    End (sector)  Size       Code  Name
+   1            2048          133119   64.0 MiB    8300  Linux filesystem
+
+Command (? for help): w
+
+Final checks complete. About to write GPT data. THIS WILL OVERWRITE EXISTING
+PARTITIONS!!
+
+Do you want to proceed? (Y/N): y
+OK; writing new GUID partition table (GPT) to /dev/sdb.
+The operation has completed successfully.
+
+partprobe /dev/sdb -- if adding a partition to boot disk then run partprobe
+mkfs.xfs /dev/sdb1 -f
+mkdir /onemore
+mount /dev/sdb1 /onemore
+mount -- shows everything that is mounted
+cat /etc/mtab -- copy the below line
+/dev/sdb1 /onemore xfs rw,seclabel,relatime,attr2,inode64,noquota 0 0
+cat /etc/mtab | grep sdb1 >> /etc/fstab
+blkid -- to use UUID that is universally unique idetifier
+copy the UUID for sdb1
+UUID="cf91b504-d7a5-4af8-9374-a06c6c7d5380"
+and edit /etc/fstab and replace /dev/sdb1 with its UUID without double quotes
+umount /onemore
+mount -a or mount /onemore
+if you want to remove this partition; remove/comment out the line from /etc/fstab and then unmount it, rm the mount point, remove the partition using gdisk/fdisk
+
+for swap:
+gisk -- below are the entries and outputs
+Command (? for help): n
+Partition number (2-128, default 2):
+First sector (34-1048542, default = 133120) or {+-}size{KMGTP}:
+Last sector (133120-1048542, default = 1048542) or {+-}size{KMGTP}: +64M
+Current type is 'Linux filesystem'
+Hex code or GUID (L to show codes, Enter = 8300): 8200
+Changed type of partition to 'Linux swap'
+
+Command (? for help): p
+Disk /dev/sdb: 1048576 sectors, 512.0 MiB
+Logical sector size: 512 bytes
+Disk identifier (GUID): 16824CB3-4E75-4D7F-9ADA-5DD988088655
+Partition table holds up to 128 entries
+First usable sector is 34, last usable sector is 1048542
+Partitions will be aligned on 2048-sector boundaries
+Total free space is 786365 sectors (384.0 MiB)
+
+Number  Start (sector)    End (sector)  Size       Code  Name
+   1            2048          133119   64.0 MiB    8300  Linux filesystem
+   2          133120          264191   64.0 MiB    8200  Linux swap
+
+Command (? for help): w
+
+Final checks complete. About to write GPT data. THIS WILL OVERWRITE EXISTING
+PARTITIONS!!
+
+Do you want to proceed? (Y/N): y
+OK; writing new GUID partition table (GPT) to /dev/sdb.
+Warning: The kernel is still using the old partition table.
+The new table will be used at the next reboot.
+The operation has completed successfully.
+
+partprobe /dev/sdb
+mkswap /dev/sdb2
+free -h -- shows total SWAP 819
+swapon /dev/sdb2
+free -h -- shows total SWAP 883
+nano /etc/fstab
+
+recap:
+lsblk
+gdisk/fdisk
+partprobe
+mkfs/mkswap
+mount/swapon
+/etc/fstab - contains info on device, mount point, filesystem, mount options, dump frequenct, check
+blkid for finding UUID
+
+9.2 Accessing network storage
+network file sharing:
+1. NFS -- network file system; traditional linux/unix; originally UDP; NFSv4+ can do TCP; fast, lean, efficient, kerberos based security
+2. CIFS -- Common internet file system; taditionally MS/Mac; TCP+UDP; feature-rich; various auth types supported
+
+yum install nfs-utils.x86_64 -- not enough disk space
+rpm -qa --queryformat '%10{size} - %-25{name} \t %{version}\n' | sort -n -- lists installed package size
+find /var -name "*.log" \( \( -size +50M -mtime +7 \) -o -mtime +30 \) -exec truncate {} --size 0 \;
+yum clean all
+rm -rf /var/cache/yum -- cleaned up a lot of files
+package-cleanup --quiet --leaves --exclude-bin -- check for orphan packages
+package-cleanup --quiet --leaves --exclude-bin | xargs yum remove -y -- clean up orphan packages
+reference: check this url: https://medium.com/@getpagespeed/clear-disk-space-on-centos-6-11f966504ff9
+
+yum install nfs-utils.x86_64
+ping serv - test the connection with server appliance
+showmount -e serv -- identify the share
+showmount -e 192.168.58.254
+showmount -e serv.acloud.guru
+mount serv:/ /mnt
+cd /mnt
+ls -- shows directories
+
+yum install autofs -y
+systemctl start autofs
+systemctl enable autofs -- always do that so when system is rebooted, the services start again
+cd /net
+cd serv
+ls
+mkdir /nfsmount
+mount -t nfs serv:/home/store /nfsmount
+mount
+nano /etc/fstab -- add the below line to make it persistent
+serv:/home/store        /nfsmount               nfs     defaults,bg     0 0
+umount /nfsmount
+mount -a
+umount /nfsmount/ -- shows umount.nfs4: /nfsmount: device is busy
+fuser -vm /nfsmount/ -- shows if other processes are using the mount point
+
+yum install cifs-utils samba-client
+smbclient -L serv -N
+smbclient -L serv -U sambaguru -W gurus -- shows the share disk
+smbclient //serv/sambaguru -U sambaguru -W gurus -- connects to remote directory
+smb: \> ls
+mkdir /cifsmount
+mount -o username=sambaguru,domain=gurus //serv/sambaguru /cifsmount
+cd /cifsmount
+ls -al
+mount
+umount /cifsmount/
+nano /etc/fstab -- add the below line
+//serv/sambaguru        /cifsmount              cifs    credentials=/root/my.creds      0 0
+nano /root/my.creds -- add the below lines
+username=sambaguru
+domain=gurus
+password=guru
+chmod 600 my.creds
+mount -a
+mount
+comment out the new line in /etc/fstab
+
+9.3 Using the automounter
+persistent mounts in /etc/fstab can cause issues:
+- unavailable network mounts can stall boot/halt
+- global mount options don't work for all users
+- normal users cannot mount/unmount
+automounter solves for these:
+- watches given mountpoints, mounts/unmounts as needed
+- can do so with user specific mount options
+
+useradd -M -u 10000 -d /rhome/netguru1 netguru1
+getent passwd netguru1
+showmount -e serv
+nano /etc/auto.master
+cd /etc/auto.master.d/
+nano rhome.autofs -- add the following line
+/rhome  /etc/auto.rhome
+nano /etc/auto.rhome -- add the below line
+netguru1        -rw,sync        serv:/home/net/netguru1
+systemctl restart autofs
+cd /rhome
+su - netguru1
+mount
+nano /etc/auto.rhome -- comment out the first line and add a new line
+#netguru1       -rw,sync        serv:/home/net/netguru1
+*               -rw,sync        serv:/home/net/&
+systemctl restart autofs
+useradd -M -u 10001 -d /rhome/netguru2 netguru2
+su - netguru2
+mount
+
+9.4 Logical volume manager - LVM
+-- combine all the physical volumes/drives/raids into a volume group; then divide them into logical volume
+-- physical volumes do not have to be same type of device; same size
+-- pros: flexibility; scalability; cons: fault tolerance; 1 device loss could cause multiple devices to stop working
+partition--> initialize --> pool --> allocate --> format --> mount -- > make persistent
+
+su -
+gdisk /dev/sdb -- below the steps taken
+Command (? for help): n
+Partition number (3-128, default 3):
+First sector (34-1048542, default = 264192) or {+-}size{KMGTP}:
+Last sector (264192-1048542, default = 1048542) or {+-}size{KMGTP}: +64M
+Current type is 'Linux filesystem'
+Hex code or GUID (L to show codes, Enter = 8300): 8e00
+Changed type of partition to 'Linux LVM'
+
+Command (? for help): n
+Partition number (4-128, default 4):
+First sector (34-1048542, default = 395264) or {+-}size{KMGTP}:
+Last sector (395264-1048542, default = 1048542) or {+-}size{KMGTP}: +64M
+Current type is 'Linux filesystem'
+Hex code or GUID (L to show codes, Enter = 8300): 8e00
+Changed type of partition to 'Linux LVM'
+
+Command (? for help): w
+
+Final checks complete. About to write GPT data. THIS WILL OVERWRITE EXISTING
+PARTITIONS!!
+
+Do you want to proceed? (Y/N): y
+OK; writing new GUID partition table (GPT) to /dev/sdb.
+Warning: The kernel is still using the old partition table.
+The new table will be used at the next reboot.
+The operation has completed successfully.
+
+Command (? for help): p
+Disk /dev/sdb: 1048576 sectors, 512.0 MiB
+Logical sector size: 512 bytes
+Disk identifier (GUID): 16824CB3-4E75-4D7F-9ADA-5DD988088655
+Partition table holds up to 128 entries
+First usable sector is 34, last usable sector is 1048542
+Partitions will be aligned on 2048-sector boundaries
+Total free space is 524221 sectors (256.0 MiB)
+
+Number  Start (sector)    End (sector)  Size       Code  Name
+   1            2048          133119   64.0 MiB    8300  Linux filesystem
+   2          133120          264191   64.0 MiB    8200  Linux swap
+   3          264192          395263   64.0 MiB    8E00  Linux LVM
+   4          395264          526335   64.0 MiB    8E00  Linux LVM
+
+partprobe /dev/sdb
+pv -- tab tab
+vg -- tab tab
+lv -- tab tab
+lvm
+lvm>help
+lvm>help vgscan
+lvm>quit
+pvcreate /dev/sdb3 /dev/sdb4
+  Physical volume "/dev/sdb3" successfully created.
+  Physical volume "/dev/sdb4" successfully created.
+vgcreate MyVG /dev/sdb3 /dev/sdb4
+  Volume group "MyVG" successfully created
+pvdisplay
+vgdisplay
+pvs
+vgs
+lvcreate -n docs -l 20%VG MyVG
+lvcreate -n data -L 80M MyVG
+mkfs.xfs /dev/MyVG/docs
+mkfs.xfs /dev/MyVG/data
+mkdir -p /store/data /store/docs
+mount /dev/MyVG/data /store/data
+mount /dev/MyVG/docs /store/docs
+mount
+nano /etc/fstab -- add below lines
+/dev/MyVG/data          /store/data             xfs     defaults        0 2
+/dev/MyVG/docs          /store/docs             xfs     defaults        0 2
+
+umount /store/data
+umount /store/docs
+mount -a
+mount
+
+vgs
+gdisk /dev/sdb
+Command (? for help): n
+Partition number (5-128, default 5):
+First sector (34-1048542, default = 526336) or {+-}size{KMGTP}:
+Last sector (526336-1048542, default = 1048542) or {+-}size{KMGTP}: +128M
+Current type is 'Linux filesystem'
+Hex code or GUID (L to show codes, Enter = 8300): 8e00
+Changed type of partition to 'Linux LVM'
+
+Command (? for help): w
+
+Final checks complete. About to write GPT data. THIS WILL OVERWRITE EXISTING
+PARTITIONS!!
+
+Do you want to proceed? (Y/N): y
+OK; writing new GUID partition table (GPT) to /dev/sdb.
+Warning: The kernel is still using the old partition table.
+The new table will be used at the next reboot.
+The operation has completed successfully.
+
+partprobe /dev/sdb
+pvcreate /dev/sdb5
+vgextend MyVG /dev/sdb5
+vgs -- shows more free space
+lvextend -L +64M /dev/MyVG/data
+df -h
+xfs_growfs /dev/MyVG/data
+mount
+df -h
+-- to remove logical volume
+pvmove /dev/sdb3
+vgreduce MyVG /dev/sdb3
+
+10.1 Introducing systemd
+systemd is a suite of service/boot management tools
+1st binary called by kernel on boot: always PID 1
+it intelligently manages services & performs startup tasks
+- parallel service initialization minimizes boot time
+- can start/stop services in response to certain events
+- handles service dependencies to prevent timeouts
+- systemctl is the tool for interacting with systemd
+systemd controls system states using units
+- *.service used to manage system services
+-- e.g., ssh.service
+- *.target units used to put system into a specific state
+-- e.g., graphical.target
+- many others
+-- e.g., *.socket, *.path to respond to network/fs events
+sudo -i (same as su -)
+systemctl stop autofs
+systemctl status autofs
+systemctl start autofs.service
+systemctl status autofs
+systemctl restart autofs.service (PID changes when look at the status)
+systemctl reload autofs.service (PID does not change when look at the status)
+note: whenever you start a service, make sure it is also enables
+systemctl list-units
+systemctl list-units -t service (shows only service units)
+systemctl enable autofs
+systemctl list-unit-files | grep autofs
+systemctl list-unit-files autofs.service
+systemctl disable autofs.service
+systemctl list-unit-files autofs.service
+systemctl mask autofs.service
+systemctl list-unit-files autofs.service
+systemctl enable autofs (cannot do that)
+systemctl unmask autofs.service
+systemctl list-unit-files
+systemctl is-active autofs
+systemctl is-enabled autofs
+systemctl get-default
+systemctl isolate multi-user.target
+systemctl set-default multi-user.target
+systemctl list-dependencies graphical.target
+recap:
+systemctl
+- set-default
+- list-dependencies
+- isolate
+-- graphical
+-- multi-user
+-- rescue
+
+10.2 Understanding the boot process
+BIOS starts up and look for the boot device -- configured firmware
+then it will look to boot loader (grub2 default for linux); there are 2 stages during boot loader -- stage 1 happens because of grub2-install; stage 2 is configured under /boot/grub2/grub.cfg
+grub2-mkconfig can be used to modify /etc/grub.d and /etc/default/grub
+then the kernel loads and then initramfs is loaded in the momery by a tool called dracut and you can change dracut configuration in /etc/dracut.conf; kernel can be configured by using configuration files that are in /sys and /proc/sys
+sysctl reads values from /etc/sysctl.conf and writes to /sys and /proc/sys
+then copy of systemd is loaded; systemd boots up initrd.target that loads up systemd from the root filesystem /
+mounts actual rootfs to /sysroot RO; pivot kernel rootfs to /sysroot
+then it load default.target; sysinit.target (for filesystem checks, remount RW)
+boot parameters are set in grub and are passed from boot loader to kernel and then to systemd
+rd.break -- great place to change root password; requires selinux to relabel everything
+systemd.unit=rescue.target -- does a filesystem check before sulogin
+systemd.unit=emergency.target -- skips filesystem check
+
+10.3 root password recovery
+log on as root
+systemctl reboot
+when you see the OS options; that is stage 2 of grub2
+select the top CentOS; press e for edit
+find the line wih linux16 / -- ctrl+e to get to the end of the line and type rd.break; then type ctrl+x to boot it up
+mount -- shows that root filesystem is mounted on sysroot and it is read only
+mount -o remount,rw /sysroot/ -- makes it rw
+mount -- shows it is now rw
+chroot /sysroot -- now it is using the actual filesystem on the disk; it was using initramfs
+echo guru | passwd --stdin root -- another way to change password 
+passwd root
+touch /.autorelabel
+
+10.4 fixing boot filesystem issues
+log on as root
+nano /etc/fstab
+remove U from UUID -- causing an issue
+systemctl reboot
+shows emergency mode prompt; type root password
+shift+page up to look at the error
+systemctl status boot.mount
+mount -- shows root filesystem is rw
+nano /etc/fstab -- make the changes
+systemctl reboot
+
+10.5 Repairing bootloader problems
+Log on as root
+nano /boot/grub2/grub.cfg
+search for line starts with linux16; change linux16 to linx16
+systemctl reboot -- gives error on reboot; press any key to go back to menu
+select the OS; press e to edit; fix the spelling issue and then add systemd.unit=rescue.target at the end of the line; making changes in grub does not permanently fix the issue; so that's why we need to bring the system up in rescue mode and fix the issue; ctrl+x
+grub2-mkconfig | less
+grub2-mkconfig -o /boot/grub2/grub.cfg
+systemctl reboot
+
+11.1 Discovery and diagnostics
+host --> NIC --> default GW --> DNS --> internet
+ip addr -- ifconfig is older command
+ip address show -- same as above
+ip a s -- same as above
+ip a s enp0s3
+enp0s3 -- en = ethernet, p0 = port 0, s3 = slot 3
+ethtool enp0s3
+hostname -- shows host name
+hostname <new name> -- temporarily changes the host name
+cat /etc/hostname -- stores the host name
+hostnamectl
+hostnamectl set-hostname HatGuru.acloud.guru
+hostnamectl
+ip route show -- shows default gateway address
+ip r -- same as above
+ping 10.0.2.2 -c3
+dig acloud.guru -- shows dns is working; dig is replacing nslookup
+cat /etc/resolv.conf -- shows name server
+host acloud.guru
+tracepath acloud.guru -- replacement for traceroute
+mtr acloud.guru
+ss -- shows ports and connections; replacement for netstat
+ss -lt -- shows tcp sockets using services
+ss -ltn -- shows raw numbers
+ss -taupen
+
+11.2 Configuration
+Network manager is a network control and config service
+- keeps devices/connections up when possible
+- can respond to hardware/network events
+works synergistically with old configuration mechanism
+- /etc/sysconfig/network-scripts/ifcfg-*
+- reads config from/writes to above
+- files can be copied, renamed, manually edited to configure networking
+configuration bundled into connections
+- devices (ethernet, wifi, wwan, wan, etc)
+- address (dhcp/static, ipv4, ipv6)
+- routing
+- name services
+enp0s8 - that is another netowrk adaptor on the machine; 192.168.58.1
+GuruServ has ip 192.168.58.254; there is another ip on GuruServ 172.16.58.254 and dns is adns.test
+nmcli --tab tab
+nmcli device
+nmcli device show
+nmcli connection
+nmcli c -- same as above
+nmtui
+nmcli connection add con-name STATIC ipv4.addresses 192.168.58.1/24 ifname enp0s8 type ethernet
+nmcli connection show STATIC | less
+nmcli connection modify STATIC +ipv4.routes "172.16.0.0/16 192.168.58.254" ipv4.dns 172.16.58.254
+less /etc/sysconfig/network-scripts/ifcfg-STATIC -- everything looks fine except BOOTPROTO=dhcp
+nmcli connection edit STATIC -- shows edit prompt nmcli>
+nmcli> help
+nmcli> print
+nmcli> describe ipv4.method
+nmcli> set ipv4.method manual
+nmcli> print
+nmcli> safe
+nmcli> quit
+less /etc/sysconfig/network-scripts/ifcfg-STATIC -- everything looks fine and BOOTPROTO=none
+nmcli connection up STATIC
+nmcli connection -- shows STATIC as active connection
+vimdiff /etc/sysconfig/network-scripts/ifcfg-{STATIC,enp0s8}
+systemctl reboot
+su -
+ping 172.16.58.254
+dig adns.test -- does not resolve
+cat /etc/resolv.conf
+nmcli connection modify enp0s3 ipv4.ignore-auto-dns true
+nmcli connection up enp0s3
+cat /etc/resolv.conf -- only shows 172.16.58.254
+dig adns.test -- works now
+nmcli connection modify enp0s3 ipv4.ignore-auto-dns false -- revert back changes
+nmcli connection up enp0s3
+cat /etc/resolv.conf -- shows both
+nmcli connection up enp0s8
+nmcli connection -- STATIC is inactive
+nmcli connection show STATIC | grep auto
+nmcli connection modify STATIC connection.autoconnect no
+nmcli connection show STATIC | grep auto 
+cat /etc/resolv.conf -- shows only 192.168.1.1
+dig acloud.guru
+recap:
+nmtui
+nmcli
+- dev
+-- show
+-- dis
+- net
+-- off
+- con
+-- up
+-- down
+-- add
+-- mod
+-- del
+
+11.3 Hostnames & dns
+hostname -- shows host name and set the host name temporarily
+/etc/hostname -- where host name is configured
+hostnamectl -- shows host name and other info
+- set-hostname -- sets hostname permanently
+- part of systemd suite
+- immediately sets host name and updates config files
+ping www -- first thing it checks is /etc/nsswitch.conf; then it checks /etc/hosts; then it checks /etc/resolv.conf
+-- resolv.conf contains a line 'search acloud.guru'; when you ping www, it becomes www.acloud.guru
+getent hosts serv -- shows the entry from /etc/hosts file
+host
+dig acloud.guru
+dig @8.8.8.8 acloud.guru
+dig ns acloud.guru -- shows name servers
+dig mx acloud.guru -- shows mail exchange servers
+
+11.4 Firewalling
+Netfilter is the kernel firewall/NAT/packet mangler
+many hardware firewalls use embedded linux+netfilter
+iptables & ebtables low-level tools to manage
+- complex sysntax
+- static rules loaded at boot
+firewalld simplifies firewall management
+- classifies traffic into zones and handles accordingly
+- ties into NetworkManager
+firewalld ships with several pre-defined zones
+- trusted -- allows all incoming traffic
+- public -- rejects incoming except ssh / dhcpv6-client
+-- default zone for new interfaces
+block -- rejects all traffic; the other side knows that they are blocked
+drop -- drops all traffic; the other side does not know
+zone rules are stateful; incoming traffic related to outbound connections allowed
+
+systemctl start httpd
+systemctl status httpd
+ssh fwguru@serv (password: fwguru)
+elinks http://hatguru -- does not retrieve page
+firewall-cmd --list-all-zones
+firewall-cmd --list-all --zone=public
+firewall-cmd --add-service=http
+firewall-cmd --add-service=http --zone=public -- same as above
+firewall-cmd --list-all --zone=public -- shows http
+firewall-cmd --info-service=http -- shows it is tcp traffic on port 80
+ssh fwguru@serv
+elinks http://hatguru -- works
+nano /etc/httpd/conf/httpd.conf -- change port from 80 to 81
+systemctl restart httpd
+systemctl status httpd
+ssh fwguru@serv
+elinks http://hatguru:81 -- does not work
+exit
+firewall-cmd --remove-service=http --zone=public
+firewall-cmd --add-port=81/tcp
+ssh fwguru@serv
+elinks http://hatguru:81 -- works
+exit
+firewall-cmd --add-port=81/tcp --permanent -- makes it permanent; otherwise firewall-cmd is only effective during current run state
+firewall-cmd --reload
+firewall-cmd --remove-service=http --zone=public
+open terminal in GUI and then type firewall-config
+
+recap:
+firewall-cmd
+- --permanent
+- --get-zones
+- --[get|set]-default-zone
+- --zone
+- --list-all
+-- --list-all-zone
+- --[add|remove]
+-- -source
+-- -interface
+-- -service
+-- -port
+
+12.1 Traditional logging
+logging architecture
+rsyslogd -- records day to day logging; facility.priority
+facility: auth, authpriv, cron, deamon, kern, lpr, mail, news, syslog, user, uucp, local0-7
+priority/severity: emerg, alert, crit, err, warning, notice, info, debug
+/etc/rsyslog.conf
+cat /etc/rsyslog.conf
+cd /etc/rsyslog.d
+nano logguru.conf -- add the below line
+local6.*        /var/log/guru.log
+systemctl restart rsyslog.service
+logger -p local6.info THIS IS A TEST
+cat /var/log/guru.log -- shows the message
+cd /var/log
+ls
+grep -i --color ssh messages
+zgrep or zcat -- for compressed log files
+grep -i --color root secure*
+tail -f /var/log/secure &
+jobs
+kill %1
+dmesg
+cat /var/log/dmesg
+cron + logrotate for rotating the large log files
+
+12.2 the systemd journal
+systemd-journald
+- not persitent by default
+- advanced search
+- catches everything
+-- boot messages
+-- stdout & stderr
+journalctl -- only shows since the last boot
+journalctl -o verbose
+journalctl _UID=1000 -- shows all activities by guru
+journalctl _SYSTEMD_UNIT=sshd.service
+journalctl _UID=1000 --since 00:01:00
+journalctl -f -- to follow
+journalctl -p err -- shows only errors
+cd /var/log
+mkdir journal
+chmod 2775 journal
+ls -l journal/ -d
+chgrp systemd-journal journal/
+killall -USR1 systemd-journald
+systemctl reboot
+journalctl -b-1 -- shows log from boot one before last one
+journalctl -b-1 -p err
+
+13.1 Managing system time
+timedatectl
+timedatectl list-timezones | less
+timedatectl set-timezone Europe/Madrid
+date
+timedatectl set-time 9:00:00 -- cannot do that
+timedatectl set-ntp off
+timedatectl set-time 9:00:00 -- allows it now
+timedatectl set-ntp on
+hwclock -- shows wrong time
+hwclock -w 
+hwclock -- shows system time now
+NTP is network time protocol
+- on-board hw/clock are notoriously bad
+NTP hierarchy divided into strata from 1-15
+- stratum 1 connected directly to stratum 0 sources
+-- gps/atomic clock
+- stratum+2 synchronised over network -- less reliable
+- client/server & peer to peer operation
+cat /etc/chrony.conf
+nano /etc/chrony.conf -- make the below changes
+#server 0.centos.pool.ntp.org iburst
+#server 1.centos.pool.ntp.org iburst
+#server 2.centos.pool.ntp.org iburst
+#server 3.centos.pool.ntp.org iburst
+pool pool.ntp.org iburst
+
+systemctl restart chronyd.service
+chronyc -- starts chronyc client
+chronyc> sources
+chronyc> sources -v
+
+13.2 Scheduling tasks
+cronie is the recurring task scheduler
+cat /etc/crontab -- master schedule file
+/etc/crontab.d/* -- parsed as well; add config files here
+cd /etc/cron. -- tab tab
+cd /etc/cron.d
+nano utrack -- add the below line
+* * * * * root (date;users) | logger
+journalctl -f
+rm utrack
+crontab -e -- user's own crontab table; no need to specify user
+crontab -l
+crontab -l -u guru
+
