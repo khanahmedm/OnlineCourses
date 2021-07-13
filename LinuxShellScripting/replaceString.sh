@@ -1,4 +1,5 @@
 #!/bin/bash
+# This example does not modify the file, instead it only displays on screen
 
 echo -n 'Enter file name: '
 read fname
