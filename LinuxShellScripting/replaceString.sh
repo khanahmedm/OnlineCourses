@@ -15,5 +15,5 @@ sed "s/$str/$rep/g" $fname
 # Do not change the string in line 10
 sed "10!s/$str/$rep/g" $fname
 
-# Add a extra line after each line
+# Add an extra line after each line
 sed G $fname
