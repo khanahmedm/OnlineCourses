@@ -1,5 +1,5 @@
 #!/bin/bash
-# This program delete empty lines
+# This program replaces tab with space
 
 echo -n 'Enter file name: '
 read fname
