@@ -11,8 +11,7 @@ import java.util.concurrent.ExecutionException;
 
 public class ProducerDemoKeys {
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        //System.out.println("hello world!");
-
+        
         Logger logger = LoggerFactory.getLogger(ProducerDemoKeys.class);
 
         // create Producer properties
