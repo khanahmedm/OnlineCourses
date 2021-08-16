@@ -10,8 +10,7 @@ import java.util.Properties;
 
 public class ProducerDemoWithCallback {
     public static void main(String[] args) {
-        //System.out.println("hello world!");
-
+        
         Logger logger = LoggerFactory.getLogger(ProducerDemoWithCallback.class);
 
         // create Producer properties
