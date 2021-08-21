@@ -32,9 +32,9 @@ public class ElasticSearchConsumer_manComBatching {
     public static RestHighLevelClient createClient(){
         // replace with your own credentials
 
-        String hostname = "kafka-course-4401682937.us-east-1.bonsaisearch.net";
-        String username = "tyelkw65st";
-        String password = "61mx0swpb2";
+        String hostname = "";
+        String username = "";
+        String password = "";
 
         // don't do if you run a local ES
         final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
